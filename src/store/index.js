@@ -1,6 +1,19 @@
 import { createStore } from "redux";
 import { rootReducer } from "./rootReducer";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
-const store = createStore(rootReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const persistConfig = {
+    key: "root",
+    storage,
+    // обычно используется один лист
+    whitelist: ["filters", "positions"], // сохраняет определенные редюсеры
+    // blacklist:[] // удаляет определенные редюсеры
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const store = createStore(persistedReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 export { store };
+export const persistor = persistStore(store);
